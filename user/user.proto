@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package user; // proto文件的命名空间
+option go_package="github.com/akatsukisun2020/proto_proj/user"; // 指定生成golang桩代码的位置
+
+// WXUser wx用户信息
+message WXUser {
+    string user_id = 1;    // 用户id
+    string user_name = 2;  // 用户名
+}

@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package wxuserloginsvr;
+option go_package="github.com/akatsukisun2020/proto_proj/wx_user_login_svr";
+
+import "user/user.proto";    
+import "google/api/annotations.proto";  // http协议必须要引入的文件    
+
+
+// 编译错误处理： https://www.cnblogs.com/yisany/p/14888041.html ==> 暂时没搞懂是啥原因
+
+message GetUserInfoReq {
+	string user_id = 1;        // 通过用户id获取用户信息
+}
+
+message GetUserInfoRsp {
+	int32 ret_code = 1;
+    string ret_msg = 2; 
+    user.WXUser user_info = 3;  // 用户信息
+}
+
+
+
+// WXUserLoginSvr wx用户登录服务
+service WXUserLoginSvr {
+    // 获取用户信息接口
+	rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoRsp);
+}
+
+// WXUserLoginSvrHttp wx用户登录服务http服务
+service WXUserLoginSvrHttp {
+    rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			get: "/wx_user_login_svr/get_user_info"
+		};
+	}
+}
+
+
+
