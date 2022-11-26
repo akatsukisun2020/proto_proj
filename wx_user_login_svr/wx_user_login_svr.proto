@@ -31,7 +31,8 @@ service WXUserLoginSvr {
 service WXUserLoginSvrHttp {
     rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoRsp){
 		option (google.api.http) = {        // 声明http的定义方式！！
-			get: "/wx_user_login_svr/get_user_info"
+			post: "/wx_user_login_svr/get_user_info"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
 		};
 	}
 }
