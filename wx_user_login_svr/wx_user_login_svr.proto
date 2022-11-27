@@ -19,14 +19,6 @@ message GetUserInfoRsp {
     user.WXUser user_info = 3;  // 用户信息
 }
 
-
-
-// WXUserLoginSvr wx用户登录服务
-service WXUserLoginSvr {
-    // 获取用户信息接口
-	rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoRsp);
-}
-
 // WXUserLoginSvrHttp wx用户登录服务http服务
 service WXUserLoginSvrHttp {
     rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoRsp){
