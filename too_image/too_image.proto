@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package tooimage;
+option go_package="github.com/akatsukisun2020/proto_proj/too_image";
+
+import "google/api/annotations.proto";  // http协议必须要引入的文件
+
+enum Img2ImgMode {
+    ModeDefault = 0;                          // 普通画图
+    ModeControlnet = 1;                       // controlnet模式
+}
+
+message Img2ImgReq {
+    Img2ImgMode mode = 1;                     // 使用模式
+    string init_images = 2;                   // sd图片，base64编码
+    string prompt = 3;                        // 正向语
+    double denoising_strength = 4;            //去噪强度
+    int32 width = 5;                          // 宽
+    int32 height = 6;                         // 高
+    string controlnet_input_images = 7;       // controlnet输入图片，base64编码
+}
+
+message Img2ImgRsp {
+    repeated string out_images = 1;           // 输出图片(base64编码)
+}
+
+// TooImageHttp ...
+service TooImageHttp {
+    rpc Img2Img(Img2ImgReq) returns (Img2ImgRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			post: "/too_image/img2img"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+		};
+	}
+}
+
+
+

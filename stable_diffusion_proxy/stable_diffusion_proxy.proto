@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package stablediffusionproxy;
+option go_package="github.com/akatsukisun2020/proto_proj/stable_diffusion_proxy";
+
+import "google/api/annotations.proto";  // http协议必须要引入的文件
+
+
+// 编译错误处理： https://www.cnblogs.com/yisany/p/14888041.html ==> 暂时没搞懂是啥原因
+
+message OverrideSettings {
+
+}
+
+message ControlnetImg2ImgReq {
+    repeated string init_images = 1;  // 初始图片
+	string mark = 2;
+    int32 mask_blur = 3;
+    int32 inpainting_fill = 4;
+    bool inpaint_full_res = 5;
+    int32 inpaint_full_res_padding = 6;
+    int32 inpainting_mask_invert = 7;
+    int32 resize_mode = 8;// 可能是枚举
+    double denoising_strength = 9;
+    string prompt = 10;
+    string negative_prompt = 11;
+    repeated string controlnet_input_image = 12;
+    repeated string controlnet_mask = 13;
+    string controlnet_module = 14;
+    string controlnet_model = 15;
+    double controlnet_weight = 16;
+    string controlnet_resize_mode = 17;
+    bool controlnet_lowvram = 18;
+    int32 controlnet_processor_res = 19;
+    int32 controlnet_threshold_a = 20;
+    int32 controlnet_threshold_b = 21;
+    int32 seed= 22;
+    int32 subseed = 23;
+    int32 subseed_strength = 24;
+    string sampler_index = 25;
+    int32 batch_size = 26;
+    int32 n_iter = 27;
+    int32 steps = 28;
+    int32 cfg_scale = 29;
+    int32 width = 30;
+    int32 height = 31;
+    bool restore_faces = 32;
+    bool include_init_images = 33;
+    OverrideSettings override_settings = 34;
+    bool override_settings_restore_afterwards = 35;
+}
+
+message ControlnetImg2ImgRsp {
+    repeated string out_images = 1; // 输出图片
+}
+
+message SdImg2ImgReq {
+    repeated string init_images = 1;
+    int32 resize_mode = 2;
+    double denoising_strength = 3;
+    int32 image_cfg_scale = 4;
+    string mask = 5;
+    int32 mask_blur = 6;
+    int32 inpainting_fill = 7;
+    bool inpaint_full_res = 8;
+    int32 inpaint_full_res_padding = 9;
+    int32 inpainting_mask_invert = 10;
+    int32 initial_noise_multiplier = 11;
+    string prompt = 12;
+    repeated string styles = 13;
+    int32 seed = 14;
+    int32 subseed = 15;
+    int32 subseed_strength = 16;
+    int32 seed_resize_from_h = 17;
+    int32 seed_resize_from_w = 18;
+    string sampler_name = 19;
+    int32 batch_size = 20;
+    int32 n_iter = 21;
+    int32 steps = 22;
+    int32 cfg_scale = 23;
+    int32 width = 24;
+    int32 height = 25;
+    bool restore_faces = 26;
+    bool tiling = 27;
+    string negative_prompt = 28;
+    int32 eat = 29;
+    int32 s_churn = 30;
+    int32 s_tmax = 31;
+    int32 s_tmin = 32;
+    int32 s_noise = 33;
+    OverrideSettings override_settings = 34;
+    bool override_settings_restore_afterwards = 35;
+    repeated string script_args = 36;
+    string sampler_index = 37;
+    bool include_init_images = 38;
+    string script_name = 39;
+}
+
+message SdImg2ImgRsp {
+
+}
+
+// StableDiffusionProxyHttp wx用户登录服务http服务
+service StableDiffusionProxyHttp {
+    rpc ControlnetImg2Img(ControlnetImg2ImgReq) returns (ControlnetImg2ImgRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			post: "/stable_diffusion_proxy/controlnet_img2img"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+		};
+	}
+
+    rpc SdImg2Img(SdImg2ImgReq) returns (SdImg2ImgRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			post: "/stable_diffusion_proxy/img2img"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+		};
+	}
+}
+
+
+
