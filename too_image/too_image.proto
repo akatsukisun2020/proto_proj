@@ -14,7 +14,7 @@ message Img2ImgReq {
     Img2ImgMode mode = 1;                     // 使用模式
     string init_images = 2;                   // sd图片，base64编码
     string prompt = 3;                        // 正向语
-    double denoising_strength = 4;            //去噪强度
+    double denoising_strength = 4;            // 去噪强度
     int32 width = 5;                          // 宽
     int32 height = 6;                         // 高
     string controlnet_input_images = 7;       // controlnet输入图片，base64编码
@@ -24,11 +24,87 @@ message Img2ImgRsp {
     repeated string out_images = 1;           // 输出图片(base64编码)
 }
 
+
+
+//****************************************** 异步协议制定 **********************************************//
+
+message TaskParams {
+    Img2ImgMode mode = 1;                     // 使用模式
+    string init_images = 2;                   // sd图片，base64编码
+    string prompt = 3;                        // 正向语
+    double denoising_strength = 4;            // 去噪强度
+    int32 width = 5;                          // 宽
+    int32 height = 6;                         // 高
+    string controlnet_input_images = 7;       // controlnet输入图片，base64编码
+}
+
+message CreateTaskInfoReq {
+    TaskParams task_params = 1;               // 任务参数
+}
+
+message CreateTaskInfoRsp {
+    string task_id = 1;                       // 任务id
+}
+
+// QueryTaskInfoReq 查询任务信息
+message QueryTaskInfoReq{
+    string task_id = 1;                       // 任务id
+}
+
+enum TaskStatus {
+    TASKDEFAULT = 0;
+    TASKRUNNING = 1;  // 任务进行中
+    TASKDONG = 2;     // 任务已完成，后续可以查看已经好的图片. 先做用户体系
+}
+
+// TaskInfo任务信息
+message TaskInfo {
+    string task_id = 1;                       // 任务id   ==> 长时间没有轮训的任务，直接给他下掉，不要浪费资源了  ==> 或者做个感知（看看grpc是否支持）
+    // UserInfo user_info ;
+    TaskParams task_param = 2;                // 任务参数
+    TaskStatus task_status = 3;               // 任务状态
+    int32 rank_number = 4;                    // 当前任务排名(从序号1开始计算)
+}
+
+message QueryTaskInfoRsp{
+    TaskInfo task_info = 1;
+}
+
+
+
+// TooImagePollReq 轮询接口
+message TooImagePollReq {
+
+}
+
+message TooImagePollRsp {
+
+}
+
+
+
+
 // TooImageHttp ...
 service TooImageHttp {
     rpc Img2Img(Img2ImgReq) returns (Img2ImgRsp){
 		option (google.api.http) = {        // 声明http的定义方式！！
 			post: "/too_image/img2img"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+		};
+	}
+
+    // CreateTaskInfo 创建任务.如果待处理任务超过一定的限制，则直接限制流量
+    rpc CreateTaskInfo(CreateTaskInfoReq) returns (CreateTaskInfoRsp){
+        option (google.api.http) = {        // 声明http的定义方式！！
+            post: "/too_image/create_task_info"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+        };
+    }
+
+    // QueryTaskInfo 查询状态信息
+    rpc QueryTaskInfo(QueryTaskInfoReq) returns (QueryTaskInfoRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			post: "/too_image/query_task_info"
             body: "*"                     // 要传递数据过来，只能使用post方法！！
 		};
 	}

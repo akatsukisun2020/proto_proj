@@ -71,18 +71,67 @@ func (Img2ImgMode) EnumDescriptor() ([]byte, []int) {
 	return file_too_image_proto_rawDescGZIP(), []int{0}
 }
 
+type TaskStatus int32
+
+const (
+	TaskStatus_TASKDEFAULT TaskStatus = 0
+	TaskStatus_TASKRUNNING TaskStatus = 1 // 任务进行中
+	TaskStatus_TASKDONG    TaskStatus = 2 // 任务已完成，后续可以查看已经好的图片. 先做用户体系
+)
+
+// Enum value maps for TaskStatus.
+var (
+	TaskStatus_name = map[int32]string{
+		0: "TASKDEFAULT",
+		1: "TASKRUNNING",
+		2: "TASKDONG",
+	}
+	TaskStatus_value = map[string]int32{
+		"TASKDEFAULT": 0,
+		"TASKRUNNING": 1,
+		"TASKDONG":    2,
+	}
+)
+
+func (x TaskStatus) Enum() *TaskStatus {
+	p := new(TaskStatus)
+	*p = x
+	return p
+}
+
+func (x TaskStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TaskStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_too_image_proto_enumTypes[1].Descriptor()
+}
+
+func (TaskStatus) Type() protoreflect.EnumType {
+	return &file_too_image_proto_enumTypes[1]
+}
+
+func (x TaskStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TaskStatus.Descriptor instead.
+func (TaskStatus) EnumDescriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{1}
+}
+
 type Img2ImgReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Mode                  Img2ImgMode `protobuf:"varint,1,opt,name=mode,proto3,enum=tooimage.Img2ImgMode" json:"mode,omitempty"`
-	InitImages            string      `protobuf:"bytes,2,opt,name=init_images,json=initImages,proto3" json:"init_images,omitempty"` // 初始图片
-	Prompt                string      `protobuf:"bytes,3,opt,name=prompt,proto3" json:"prompt,omitempty"`
-	DenoisingStrength     float64     `protobuf:"fixed64,4,opt,name=denoising_strength,json=denoisingStrength,proto3" json:"denoising_strength,omitempty"`
-	Width                 int32       `protobuf:"varint,5,opt,name=width,proto3" json:"width,omitempty"`
-	Height                int32       `protobuf:"varint,6,opt,name=height,proto3" json:"height,omitempty"`
-	ControlnetInputImages string      `protobuf:"bytes,7,opt,name=controlnet_input_images,json=controlnetInputImages,proto3" json:"controlnet_input_images,omitempty"`
+	Mode                  Img2ImgMode `protobuf:"varint,1,opt,name=mode,proto3,enum=tooimage.Img2ImgMode" json:"mode,omitempty"`                                       // 使用模式
+	InitImages            string      `protobuf:"bytes,2,opt,name=init_images,json=initImages,proto3" json:"init_images,omitempty"`                                    // sd图片，base64编码
+	Prompt                string      `protobuf:"bytes,3,opt,name=prompt,proto3" json:"prompt,omitempty"`                                                              // 正向语
+	DenoisingStrength     float64     `protobuf:"fixed64,4,opt,name=denoising_strength,json=denoisingStrength,proto3" json:"denoising_strength,omitempty"`             // 去噪强度
+	Width                 int32       `protobuf:"varint,5,opt,name=width,proto3" json:"width,omitempty"`                                                               // 宽
+	Height                int32       `protobuf:"varint,6,opt,name=height,proto3" json:"height,omitempty"`                                                             // 高
+	ControlnetInputImages string      `protobuf:"bytes,7,opt,name=controlnet_input_images,json=controlnetInputImages,proto3" json:"controlnet_input_images,omitempty"` // controlnet输入图片，base64编码
 }
 
 func (x *Img2ImgReq) Reset() {
@@ -171,7 +220,7 @@ type Img2ImgRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	OutImages []string `protobuf:"bytes,1,rep,name=out_images,json=outImages,proto3" json:"out_images,omitempty"` // 输出图片
+	OutImages []string `protobuf:"bytes,1,rep,name=out_images,json=outImages,proto3" json:"out_images,omitempty"` // 输出图片(base64编码)
 }
 
 func (x *Img2ImgRsp) Reset() {
@@ -213,6 +262,440 @@ func (x *Img2ImgRsp) GetOutImages() []string {
 	return nil
 }
 
+type TaskParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Mode                  Img2ImgMode `protobuf:"varint,1,opt,name=mode,proto3,enum=tooimage.Img2ImgMode" json:"mode,omitempty"`                                       // 使用模式
+	InitImages            string      `protobuf:"bytes,2,opt,name=init_images,json=initImages,proto3" json:"init_images,omitempty"`                                    // sd图片，base64编码
+	Prompt                string      `protobuf:"bytes,3,opt,name=prompt,proto3" json:"prompt,omitempty"`                                                              // 正向语
+	DenoisingStrength     float64     `protobuf:"fixed64,4,opt,name=denoising_strength,json=denoisingStrength,proto3" json:"denoising_strength,omitempty"`             // 去噪强度
+	Width                 int32       `protobuf:"varint,5,opt,name=width,proto3" json:"width,omitempty"`                                                               // 宽
+	Height                int32       `protobuf:"varint,6,opt,name=height,proto3" json:"height,omitempty"`                                                             // 高
+	ControlnetInputImages string      `protobuf:"bytes,7,opt,name=controlnet_input_images,json=controlnetInputImages,proto3" json:"controlnet_input_images,omitempty"` // controlnet输入图片，base64编码
+}
+
+func (x *TaskParams) Reset() {
+	*x = TaskParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TaskParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskParams) ProtoMessage() {}
+
+func (x *TaskParams) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskParams.ProtoReflect.Descriptor instead.
+func (*TaskParams) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TaskParams) GetMode() Img2ImgMode {
+	if x != nil {
+		return x.Mode
+	}
+	return Img2ImgMode_ModeDefault
+}
+
+func (x *TaskParams) GetInitImages() string {
+	if x != nil {
+		return x.InitImages
+	}
+	return ""
+}
+
+func (x *TaskParams) GetPrompt() string {
+	if x != nil {
+		return x.Prompt
+	}
+	return ""
+}
+
+func (x *TaskParams) GetDenoisingStrength() float64 {
+	if x != nil {
+		return x.DenoisingStrength
+	}
+	return 0
+}
+
+func (x *TaskParams) GetWidth() int32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *TaskParams) GetHeight() int32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
+func (x *TaskParams) GetControlnetInputImages() string {
+	if x != nil {
+		return x.ControlnetInputImages
+	}
+	return ""
+}
+
+type CreateTaskInfoReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskParams *TaskParams `protobuf:"bytes,1,opt,name=task_params,json=taskParams,proto3" json:"task_params,omitempty"` // 任务参数
+}
+
+func (x *CreateTaskInfoReq) Reset() {
+	*x = CreateTaskInfoReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateTaskInfoReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTaskInfoReq) ProtoMessage() {}
+
+func (x *CreateTaskInfoReq) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTaskInfoReq.ProtoReflect.Descriptor instead.
+func (*CreateTaskInfoReq) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CreateTaskInfoReq) GetTaskParams() *TaskParams {
+	if x != nil {
+		return x.TaskParams
+	}
+	return nil
+}
+
+type CreateTaskInfoRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskId string `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"` // 任务id
+}
+
+func (x *CreateTaskInfoRsp) Reset() {
+	*x = CreateTaskInfoRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateTaskInfoRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTaskInfoRsp) ProtoMessage() {}
+
+func (x *CreateTaskInfoRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTaskInfoRsp.ProtoReflect.Descriptor instead.
+func (*CreateTaskInfoRsp) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CreateTaskInfoRsp) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+// QueryTaskInfoReq 查询任务信息
+type QueryTaskInfoReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskId string `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"` // 任务id
+}
+
+func (x *QueryTaskInfoReq) Reset() {
+	*x = QueryTaskInfoReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryTaskInfoReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryTaskInfoReq) ProtoMessage() {}
+
+func (x *QueryTaskInfoReq) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryTaskInfoReq.ProtoReflect.Descriptor instead.
+func (*QueryTaskInfoReq) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *QueryTaskInfoReq) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+// TaskInfo任务信息
+type TaskInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskId string `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"` // 任务id   ==> 长时间没有轮训的任务，直接给他下掉，不要浪费资源了  ==> 或者做个感知（看看grpc是否支持）
+	// UserInfo user_info ;
+	TaskParam  *TaskParams `protobuf:"bytes,2,opt,name=task_param,json=taskParam,proto3" json:"task_param,omitempty"`                              // 任务参数
+	TaskStatus TaskStatus  `protobuf:"varint,3,opt,name=task_status,json=taskStatus,proto3,enum=tooimage.TaskStatus" json:"task_status,omitempty"` // 任务状态
+	RankNumber int32       `protobuf:"varint,4,opt,name=rank_number,json=rankNumber,proto3" json:"rank_number,omitempty"`                          // 当前任务排名(从序号1开始计算)
+}
+
+func (x *TaskInfo) Reset() {
+	*x = TaskInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TaskInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskInfo) ProtoMessage() {}
+
+func (x *TaskInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskInfo.ProtoReflect.Descriptor instead.
+func (*TaskInfo) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *TaskInfo) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *TaskInfo) GetTaskParam() *TaskParams {
+	if x != nil {
+		return x.TaskParam
+	}
+	return nil
+}
+
+func (x *TaskInfo) GetTaskStatus() TaskStatus {
+	if x != nil {
+		return x.TaskStatus
+	}
+	return TaskStatus_TASKDEFAULT
+}
+
+func (x *TaskInfo) GetRankNumber() int32 {
+	if x != nil {
+		return x.RankNumber
+	}
+	return 0
+}
+
+type QueryTaskInfoRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TaskInfo *TaskInfo `protobuf:"bytes,1,opt,name=task_info,json=taskInfo,proto3" json:"task_info,omitempty"`
+}
+
+func (x *QueryTaskInfoRsp) Reset() {
+	*x = QueryTaskInfoRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryTaskInfoRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryTaskInfoRsp) ProtoMessage() {}
+
+func (x *QueryTaskInfoRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryTaskInfoRsp.ProtoReflect.Descriptor instead.
+func (*QueryTaskInfoRsp) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *QueryTaskInfoRsp) GetTaskInfo() *TaskInfo {
+	if x != nil {
+		return x.TaskInfo
+	}
+	return nil
+}
+
+// TooImagePollReq 轮询接口
+type TooImagePollReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *TooImagePollReq) Reset() {
+	*x = TooImagePollReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TooImagePollReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TooImagePollReq) ProtoMessage() {}
+
+func (x *TooImagePollReq) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TooImagePollReq.ProtoReflect.Descriptor instead.
+func (*TooImagePollReq) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{8}
+}
+
+type TooImagePollRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *TooImagePollRsp) Reset() {
+	*x = TooImagePollRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TooImagePollRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TooImagePollRsp) ProtoMessage() {}
+
+func (x *TooImagePollRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TooImagePollRsp.ProtoReflect.Descriptor instead.
+func (*TooImagePollRsp) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{9}
+}
+
 var File_too_image_proto protoreflect.FileDescriptor
 
 var file_too_image_proto_rawDesc = []byte{
@@ -238,17 +721,80 @@ var file_too_image_proto_rawDesc = []byte{
 	0x72, 0x6f, 0x6c, 0x6e, 0x65, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65,
 	0x73, 0x22, 0x2b, 0x0a, 0x0a, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x52, 0x73, 0x70, 0x12,
 	0x1d, 0x0a, 0x0a, 0x6f, 0x75, 0x74, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x18, 0x01, 0x20,
-	0x03, 0x28, 0x09, 0x52, 0x09, 0x6f, 0x75, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x2a, 0x32,
-	0x0a, 0x0b, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x0f, 0x0a,
-	0x0b, 0x4d, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x10, 0x00, 0x12, 0x12,
-	0x0a, 0x0e, 0x4d, 0x6f, 0x64, 0x65, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6e, 0x65, 0x74,
-	0x10, 0x01, 0x32, 0x64, 0x0a, 0x0c, 0x54, 0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x74,
-	0x74, 0x70, 0x12, 0x54, 0x0a, 0x07, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x12, 0x14, 0x2e,
-	0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67,
-	0x52, 0x65, 0x71, 0x1a, 0x14, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x49,
-	0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x52, 0x73, 0x70, 0x22, 0x1d, 0x82, 0xd3, 0xe4, 0x93, 0x02,
-	0x17, 0x22, 0x12, 0x2f, 0x74, 0x6f, 0x6f, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2f, 0x69, 0x6d,
-	0x67, 0x32, 0x69, 0x6d, 0x67, 0x3a, 0x01, 0x2a, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68,
+	0x03, 0x28, 0x09, 0x52, 0x09, 0x6f, 0x75, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x22, 0x85,
+	0x02, 0x0a, 0x0a, 0x54, 0x61, 0x73, 0x6b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x29, 0x0a,
+	0x04, 0x6d, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x74, 0x6f,
+	0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x4d, 0x6f,
+	0x64, 0x65, 0x52, 0x04, 0x6d, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x69, 0x6e, 0x69, 0x74,
+	0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x69,
+	0x6e, 0x69, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x72, 0x6f,
+	0x6d, 0x70, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x72, 0x6f, 0x6d, 0x70,
+	0x74, 0x12, 0x2d, 0x0a, 0x12, 0x64, 0x65, 0x6e, 0x6f, 0x69, 0x73, 0x69, 0x6e, 0x67, 0x5f, 0x73,
+	0x74, 0x72, 0x65, 0x6e, 0x67, 0x74, 0x68, 0x18, 0x04, 0x20, 0x01, 0x28, 0x01, 0x52, 0x11, 0x64,
+	0x65, 0x6e, 0x6f, 0x69, 0x73, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x65, 0x6e, 0x67, 0x74, 0x68,
+	0x12, 0x14, 0x0a, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x18, 0x05, 0x20, 0x01, 0x28, 0x05, 0x52,
+	0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x36,
+	0x0a, 0x17, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6e, 0x65, 0x74, 0x5f, 0x69, 0x6e, 0x70,
+	0x75, 0x74, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x15, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6e, 0x65, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74,
+	0x49, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x22, 0x4a, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x12, 0x35, 0x0a, 0x0b, 0x74,
+	0x61, 0x73, 0x6b, 0x5f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x14, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x54, 0x61, 0x73, 0x6b,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x0a, 0x74, 0x61, 0x73, 0x6b, 0x50, 0x61, 0x72, 0x61,
+	0x6d, 0x73, 0x22, 0x2c, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73, 0x70, 0x12, 0x17, 0x0a, 0x07, 0x74, 0x61, 0x73, 0x6b, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x64,
+	0x22, 0x2b, 0x0a, 0x10, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66,
+	0x6f, 0x52, 0x65, 0x71, 0x12, 0x17, 0x0a, 0x07, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x69, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x64, 0x22, 0xb0, 0x01,
+	0x0a, 0x08, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x17, 0x0a, 0x07, 0x74, 0x61,
+	0x73, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x74, 0x61, 0x73,
+	0x6b, 0x49, 0x64, 0x12, 0x33, 0x0a, 0x0a, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x70, 0x61, 0x72, 0x61,
+	0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61,
+	0x67, 0x65, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x09, 0x74,
+	0x61, 0x73, 0x6b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x12, 0x35, 0x0a, 0x0b, 0x74, 0x61, 0x73, 0x6b,
+	0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x14, 0x2e,
+	0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x52, 0x0a, 0x74, 0x61, 0x73, 0x6b, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12,
+	0x1f, 0x0a, 0x0b, 0x72, 0x61, 0x6e, 0x6b, 0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x0a, 0x72, 0x61, 0x6e, 0x6b, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72,
+	0x22, 0x43, 0x0a, 0x10, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66,
+	0x6f, 0x52, 0x73, 0x70, 0x12, 0x2f, 0x0a, 0x09, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x69, 0x6e, 0x66,
+	0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61,
+	0x67, 0x65, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x74, 0x61, 0x73,
+	0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x11, 0x0a, 0x0f, 0x54, 0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67,
+	0x65, 0x50, 0x6f, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x22, 0x11, 0x0a, 0x0f, 0x54, 0x6f, 0x6f, 0x49,
+	0x6d, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x6c, 0x6c, 0x52, 0x73, 0x70, 0x2a, 0x32, 0x0a, 0x0b, 0x49,
+	0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x0f, 0x0a, 0x0b, 0x4d, 0x6f,
+	0x64, 0x65, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x10, 0x00, 0x12, 0x12, 0x0a, 0x0e, 0x4d,
+	0x6f, 0x64, 0x65, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6e, 0x65, 0x74, 0x10, 0x01, 0x2a,
+	0x3c, 0x0a, 0x0a, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x0f, 0x0a,
+	0x0b, 0x54, 0x41, 0x53, 0x4b, 0x44, 0x45, 0x46, 0x41, 0x55, 0x4c, 0x54, 0x10, 0x00, 0x12, 0x0f,
+	0x0a, 0x0b, 0x54, 0x41, 0x53, 0x4b, 0x52, 0x55, 0x4e, 0x4e, 0x49, 0x4e, 0x47, 0x10, 0x01, 0x12,
+	0x0c, 0x0a, 0x08, 0x54, 0x41, 0x53, 0x4b, 0x44, 0x4f, 0x4e, 0x47, 0x10, 0x02, 0x32, 0xc8, 0x02,
+	0x0a, 0x0c, 0x54, 0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x74, 0x74, 0x70, 0x12, 0x54,
+	0x0a, 0x07, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x12, 0x14, 0x2e, 0x74, 0x6f, 0x6f, 0x69,
+	0x6d, 0x61, 0x67, 0x65, 0x2e, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x52, 0x65, 0x71, 0x1a,
+	0x14, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x49, 0x6d, 0x67, 0x32, 0x49,
+	0x6d, 0x67, 0x52, 0x73, 0x70, 0x22, 0x1d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x17, 0x22, 0x12, 0x2f,
+	0x74, 0x6f, 0x6f, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2f, 0x69, 0x6d, 0x67, 0x32, 0x69, 0x6d,
+	0x67, 0x3a, 0x01, 0x2a, 0x12, 0x72, 0x0a, 0x0e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x61,
+	0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1b, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67,
+	0x65, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f,
+	0x52, 0x65, 0x71, 0x1a, 0x1b, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73, 0x70,
+	0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x22, 0x1b, 0x2f, 0x74, 0x6f, 0x6f, 0x5f, 0x69,
+	0x6d, 0x61, 0x67, 0x65, 0x2f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x61, 0x73, 0x6b,
+	0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x3a, 0x01, 0x2a, 0x12, 0x6e, 0x0a, 0x0d, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1a, 0x2e, 0x74, 0x6f, 0x6f, 0x69,
+	0x6d, 0x61, 0x67, 0x65, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e,
+	0x66, 0x6f, 0x52, 0x65, 0x71, 0x1a, 0x1a, 0x2e, 0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73,
+	0x70, 0x22, 0x25, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1f, 0x22, 0x1a, 0x2f, 0x74, 0x6f, 0x6f, 0x5f,
+	0x69, 0x6d, 0x61, 0x67, 0x65, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x5f, 0x74, 0x61, 0x73, 0x6b,
+	0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x3a, 0x01, 0x2a, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68,
 	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x6b, 0x61, 0x74, 0x73, 0x75, 0x6b, 0x69, 0x73,
 	0x75, 0x6e, 0x32, 0x30, 0x32, 0x30, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x70, 0x72, 0x6f,
 	0x6a, 0x2f, 0x74, 0x6f, 0x6f, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f,
@@ -267,22 +813,40 @@ func file_too_image_proto_rawDescGZIP() []byte {
 	return file_too_image_proto_rawDescData
 }
 
-var file_too_image_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_too_image_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_too_image_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_too_image_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_too_image_proto_goTypes = []interface{}{
-	(Img2ImgMode)(0),   // 0: tooimage.Img2ImgMode
-	(*Img2ImgReq)(nil), // 1: tooimage.Img2ImgReq
-	(*Img2ImgRsp)(nil), // 2: tooimage.Img2ImgRsp
+	(Img2ImgMode)(0),          // 0: tooimage.Img2ImgMode
+	(TaskStatus)(0),           // 1: tooimage.TaskStatus
+	(*Img2ImgReq)(nil),        // 2: tooimage.Img2ImgReq
+	(*Img2ImgRsp)(nil),        // 3: tooimage.Img2ImgRsp
+	(*TaskParams)(nil),        // 4: tooimage.TaskParams
+	(*CreateTaskInfoReq)(nil), // 5: tooimage.CreateTaskInfoReq
+	(*CreateTaskInfoRsp)(nil), // 6: tooimage.CreateTaskInfoRsp
+	(*QueryTaskInfoReq)(nil),  // 7: tooimage.QueryTaskInfoReq
+	(*TaskInfo)(nil),          // 8: tooimage.TaskInfo
+	(*QueryTaskInfoRsp)(nil),  // 9: tooimage.QueryTaskInfoRsp
+	(*TooImagePollReq)(nil),   // 10: tooimage.TooImagePollReq
+	(*TooImagePollRsp)(nil),   // 11: tooimage.TooImagePollRsp
 }
 var file_too_image_proto_depIdxs = []int32{
 	0, // 0: tooimage.Img2ImgReq.mode:type_name -> tooimage.Img2ImgMode
-	1, // 1: tooimage.TooImageHttp.Img2Img:input_type -> tooimage.Img2ImgReq
-	2, // 2: tooimage.TooImageHttp.Img2Img:output_type -> tooimage.Img2ImgRsp
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0, // 1: tooimage.TaskParams.mode:type_name -> tooimage.Img2ImgMode
+	4, // 2: tooimage.CreateTaskInfoReq.task_params:type_name -> tooimage.TaskParams
+	4, // 3: tooimage.TaskInfo.task_param:type_name -> tooimage.TaskParams
+	1, // 4: tooimage.TaskInfo.task_status:type_name -> tooimage.TaskStatus
+	8, // 5: tooimage.QueryTaskInfoRsp.task_info:type_name -> tooimage.TaskInfo
+	2, // 6: tooimage.TooImageHttp.Img2Img:input_type -> tooimage.Img2ImgReq
+	5, // 7: tooimage.TooImageHttp.CreateTaskInfo:input_type -> tooimage.CreateTaskInfoReq
+	7, // 8: tooimage.TooImageHttp.QueryTaskInfo:input_type -> tooimage.QueryTaskInfoReq
+	3, // 9: tooimage.TooImageHttp.Img2Img:output_type -> tooimage.Img2ImgRsp
+	6, // 10: tooimage.TooImageHttp.CreateTaskInfo:output_type -> tooimage.CreateTaskInfoRsp
+	9, // 11: tooimage.TooImageHttp.QueryTaskInfo:output_type -> tooimage.QueryTaskInfoRsp
+	9, // [9:12] is the sub-list for method output_type
+	6, // [6:9] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_too_image_proto_init() }
@@ -315,14 +879,110 @@ func file_too_image_proto_init() {
 				return nil
 			}
 		}
+		file_too_image_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TaskParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateTaskInfoReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateTaskInfoRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryTaskInfoReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TaskInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryTaskInfoRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TooImagePollReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TooImagePollRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_too_image_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   2,
+			NumEnums:      2,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -350,6 +1010,10 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TooImageHttpClient interface {
 	Img2Img(ctx context.Context, in *Img2ImgReq, opts ...grpc.CallOption) (*Img2ImgRsp, error)
+	// CreateTaskInfo 创建任务.如果待处理任务超过一定的限制，则直接限制流量
+	CreateTaskInfo(ctx context.Context, in *CreateTaskInfoReq, opts ...grpc.CallOption) (*CreateTaskInfoRsp, error)
+	// QueryTaskInfo 查询状态信息
+	QueryTaskInfo(ctx context.Context, in *QueryTaskInfoReq, opts ...grpc.CallOption) (*QueryTaskInfoRsp, error)
 }
 
 type tooImageHttpClient struct {
@@ -369,9 +1033,31 @@ func (c *tooImageHttpClient) Img2Img(ctx context.Context, in *Img2ImgReq, opts .
 	return out, nil
 }
 
+func (c *tooImageHttpClient) CreateTaskInfo(ctx context.Context, in *CreateTaskInfoReq, opts ...grpc.CallOption) (*CreateTaskInfoRsp, error) {
+	out := new(CreateTaskInfoRsp)
+	err := c.cc.Invoke(ctx, "/tooimage.TooImageHttp/CreateTaskInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tooImageHttpClient) QueryTaskInfo(ctx context.Context, in *QueryTaskInfoReq, opts ...grpc.CallOption) (*QueryTaskInfoRsp, error) {
+	out := new(QueryTaskInfoRsp)
+	err := c.cc.Invoke(ctx, "/tooimage.TooImageHttp/QueryTaskInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TooImageHttpServer is the server API for TooImageHttp service.
 type TooImageHttpServer interface {
 	Img2Img(context.Context, *Img2ImgReq) (*Img2ImgRsp, error)
+	// CreateTaskInfo 创建任务.如果待处理任务超过一定的限制，则直接限制流量
+	CreateTaskInfo(context.Context, *CreateTaskInfoReq) (*CreateTaskInfoRsp, error)
+	// QueryTaskInfo 查询状态信息
+	QueryTaskInfo(context.Context, *QueryTaskInfoReq) (*QueryTaskInfoRsp, error)
 }
 
 // UnimplementedTooImageHttpServer can be embedded to have forward compatible implementations.
@@ -380,6 +1066,12 @@ type UnimplementedTooImageHttpServer struct {
 
 func (*UnimplementedTooImageHttpServer) Img2Img(context.Context, *Img2ImgReq) (*Img2ImgRsp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Img2Img not implemented")
+}
+func (*UnimplementedTooImageHttpServer) CreateTaskInfo(context.Context, *CreateTaskInfoReq) (*CreateTaskInfoRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTaskInfo not implemented")
+}
+func (*UnimplementedTooImageHttpServer) QueryTaskInfo(context.Context, *QueryTaskInfoReq) (*QueryTaskInfoRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTaskInfo not implemented")
 }
 
 func RegisterTooImageHttpServer(s *grpc.Server, srv TooImageHttpServer) {
@@ -404,6 +1096,42 @@ func _TooImageHttp_Img2Img_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TooImageHttp_CreateTaskInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTaskInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TooImageHttpServer).CreateTaskInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tooimage.TooImageHttp/CreateTaskInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TooImageHttpServer).CreateTaskInfo(ctx, req.(*CreateTaskInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TooImageHttp_QueryTaskInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTaskInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TooImageHttpServer).QueryTaskInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tooimage.TooImageHttp/QueryTaskInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TooImageHttpServer).QueryTaskInfo(ctx, req.(*QueryTaskInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _TooImageHttp_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "tooimage.TooImageHttp",
 	HandlerType: (*TooImageHttpServer)(nil),
@@ -411,6 +1139,14 @@ var _TooImageHttp_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Img2Img",
 			Handler:    _TooImageHttp_Img2Img_Handler,
+		},
+		{
+			MethodName: "CreateTaskInfo",
+			Handler:    _TooImageHttp_CreateTaskInfo_Handler,
+		},
+		{
+			MethodName: "QueryTaskInfo",
+			Handler:    _TooImageHttp_QueryTaskInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
