@@ -696,6 +696,101 @@ func (*TooImagePollRsp) Descriptor() ([]byte, []int) {
 	return file_too_image_proto_rawDescGZIP(), []int{9}
 }
 
+// TooImageHeartBeatReq 心跳
+type TooImageHeartBeatReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *TooImageHeartBeatReq) Reset() {
+	*x = TooImageHeartBeatReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TooImageHeartBeatReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TooImageHeartBeatReq) ProtoMessage() {}
+
+func (x *TooImageHeartBeatReq) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TooImageHeartBeatReq.ProtoReflect.Descriptor instead.
+func (*TooImageHeartBeatReq) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *TooImageHeartBeatReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type TooImageHeartBeatRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Response string `protobuf:"bytes,1,opt,name=response,proto3" json:"response,omitempty"`
+}
+
+func (x *TooImageHeartBeatRsp) Reset() {
+	*x = TooImageHeartBeatRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_too_image_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TooImageHeartBeatRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TooImageHeartBeatRsp) ProtoMessage() {}
+
+func (x *TooImageHeartBeatRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_too_image_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TooImageHeartBeatRsp.ProtoReflect.Descriptor instead.
+func (*TooImageHeartBeatRsp) Descriptor() ([]byte, []int) {
+	return file_too_image_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *TooImageHeartBeatRsp) GetResponse() string {
+	if x != nil {
+		return x.Response
+	}
+	return ""
+}
+
 var File_too_image_proto protoreflect.FileDescriptor
 
 var file_too_image_proto_rawDesc = []byte{
@@ -766,14 +861,20 @@ var file_too_image_proto_rawDesc = []byte{
 	0x67, 0x65, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x08, 0x74, 0x61, 0x73,
 	0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x11, 0x0a, 0x0f, 0x54, 0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67,
 	0x65, 0x50, 0x6f, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x22, 0x11, 0x0a, 0x0f, 0x54, 0x6f, 0x6f, 0x49,
-	0x6d, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x6c, 0x6c, 0x52, 0x73, 0x70, 0x2a, 0x32, 0x0a, 0x0b, 0x49,
+	0x6d, 0x61, 0x67, 0x65, 0x50, 0x6f, 0x6c, 0x6c, 0x52, 0x73, 0x70, 0x22, 0x2a, 0x0a, 0x14, 0x54,
+	0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74,
+	0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x32, 0x0a, 0x14, 0x54, 0x6f, 0x6f, 0x49, 0x6d,
+	0x61, 0x67, 0x65, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x52, 0x73, 0x70, 0x12,
+	0x1a, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x08, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2a, 0x32, 0x0a, 0x0b, 0x49,
 	0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x0f, 0x0a, 0x0b, 0x4d, 0x6f,
 	0x64, 0x65, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x10, 0x00, 0x12, 0x12, 0x0a, 0x0e, 0x4d,
 	0x6f, 0x64, 0x65, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6e, 0x65, 0x74, 0x10, 0x01, 0x2a,
 	0x3c, 0x0a, 0x0a, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x0f, 0x0a,
 	0x0b, 0x54, 0x41, 0x53, 0x4b, 0x44, 0x45, 0x46, 0x41, 0x55, 0x4c, 0x54, 0x10, 0x00, 0x12, 0x0f,
 	0x0a, 0x0b, 0x54, 0x41, 0x53, 0x4b, 0x52, 0x55, 0x4e, 0x4e, 0x49, 0x4e, 0x47, 0x10, 0x01, 0x12,
-	0x0c, 0x0a, 0x08, 0x54, 0x41, 0x53, 0x4b, 0x44, 0x4f, 0x4e, 0x47, 0x10, 0x02, 0x32, 0xc8, 0x02,
+	0x0c, 0x0a, 0x08, 0x54, 0x41, 0x53, 0x4b, 0x44, 0x4f, 0x4e, 0x47, 0x10, 0x02, 0x32, 0xc6, 0x03,
 	0x0a, 0x0c, 0x54, 0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x48, 0x74, 0x74, 0x70, 0x12, 0x54,
 	0x0a, 0x07, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x12, 0x14, 0x2e, 0x74, 0x6f, 0x6f, 0x69,
 	0x6d, 0x61, 0x67, 0x65, 0x2e, 0x49, 0x6d, 0x67, 0x32, 0x49, 0x6d, 0x67, 0x52, 0x65, 0x71, 0x1a,
@@ -794,11 +895,19 @@ var file_too_image_proto_rawDesc = []byte{
 	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x73, 0x6b, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73,
 	0x70, 0x22, 0x25, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1f, 0x22, 0x1a, 0x2f, 0x74, 0x6f, 0x6f, 0x5f,
 	0x69, 0x6d, 0x61, 0x67, 0x65, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x5f, 0x74, 0x61, 0x73, 0x6b,
-	0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x3a, 0x01, 0x2a, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x6b, 0x61, 0x74, 0x73, 0x75, 0x6b, 0x69, 0x73,
-	0x75, 0x6e, 0x32, 0x30, 0x32, 0x30, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x70, 0x72, 0x6f,
-	0x6a, 0x2f, 0x74, 0x6f, 0x6f, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x3a, 0x01, 0x2a, 0x12, 0x7c, 0x0a, 0x11, 0x54, 0x6f, 0x6f, 0x49,
+	0x6d, 0x61, 0x67, 0x65, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x12, 0x1e, 0x2e,
+	0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x54, 0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67,
+	0x65, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x52, 0x65, 0x71, 0x1a, 0x1e, 0x2e,
+	0x74, 0x6f, 0x6f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2e, 0x54, 0x6f, 0x6f, 0x49, 0x6d, 0x61, 0x67,
+	0x65, 0x48, 0x65, 0x61, 0x72, 0x74, 0x42, 0x65, 0x61, 0x74, 0x52, 0x73, 0x70, 0x22, 0x27, 0x82,
+	0xd3, 0xe4, 0x93, 0x02, 0x21, 0x12, 0x1f, 0x2f, 0x74, 0x6f, 0x6f, 0x5f, 0x69, 0x6d, 0x61, 0x67,
+	0x65, 0x2f, 0x74, 0x6f, 0x6f, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x5f, 0x68, 0x65, 0x61, 0x72,
+	0x74, 0x5f, 0x62, 0x65, 0x61, 0x74, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x6b, 0x61, 0x74, 0x73, 0x75, 0x6b, 0x69, 0x73, 0x75, 0x6e,
+	0x32, 0x30, 0x32, 0x30, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x70, 0x72, 0x6f, 0x6a, 0x2f,
+	0x74, 0x6f, 0x6f, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -814,39 +923,43 @@ func file_too_image_proto_rawDescGZIP() []byte {
 }
 
 var file_too_image_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_too_image_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_too_image_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_too_image_proto_goTypes = []interface{}{
-	(Img2ImgMode)(0),          // 0: tooimage.Img2ImgMode
-	(TaskStatus)(0),           // 1: tooimage.TaskStatus
-	(*Img2ImgReq)(nil),        // 2: tooimage.Img2ImgReq
-	(*Img2ImgRsp)(nil),        // 3: tooimage.Img2ImgRsp
-	(*TaskParams)(nil),        // 4: tooimage.TaskParams
-	(*CreateTaskInfoReq)(nil), // 5: tooimage.CreateTaskInfoReq
-	(*CreateTaskInfoRsp)(nil), // 6: tooimage.CreateTaskInfoRsp
-	(*QueryTaskInfoReq)(nil),  // 7: tooimage.QueryTaskInfoReq
-	(*TaskInfo)(nil),          // 8: tooimage.TaskInfo
-	(*QueryTaskInfoRsp)(nil),  // 9: tooimage.QueryTaskInfoRsp
-	(*TooImagePollReq)(nil),   // 10: tooimage.TooImagePollReq
-	(*TooImagePollRsp)(nil),   // 11: tooimage.TooImagePollRsp
+	(Img2ImgMode)(0),             // 0: tooimage.Img2ImgMode
+	(TaskStatus)(0),              // 1: tooimage.TaskStatus
+	(*Img2ImgReq)(nil),           // 2: tooimage.Img2ImgReq
+	(*Img2ImgRsp)(nil),           // 3: tooimage.Img2ImgRsp
+	(*TaskParams)(nil),           // 4: tooimage.TaskParams
+	(*CreateTaskInfoReq)(nil),    // 5: tooimage.CreateTaskInfoReq
+	(*CreateTaskInfoRsp)(nil),    // 6: tooimage.CreateTaskInfoRsp
+	(*QueryTaskInfoReq)(nil),     // 7: tooimage.QueryTaskInfoReq
+	(*TaskInfo)(nil),             // 8: tooimage.TaskInfo
+	(*QueryTaskInfoRsp)(nil),     // 9: tooimage.QueryTaskInfoRsp
+	(*TooImagePollReq)(nil),      // 10: tooimage.TooImagePollReq
+	(*TooImagePollRsp)(nil),      // 11: tooimage.TooImagePollRsp
+	(*TooImageHeartBeatReq)(nil), // 12: tooimage.TooImageHeartBeatReq
+	(*TooImageHeartBeatRsp)(nil), // 13: tooimage.TooImageHeartBeatRsp
 }
 var file_too_image_proto_depIdxs = []int32{
-	0, // 0: tooimage.Img2ImgReq.mode:type_name -> tooimage.Img2ImgMode
-	0, // 1: tooimage.TaskParams.mode:type_name -> tooimage.Img2ImgMode
-	4, // 2: tooimage.CreateTaskInfoReq.task_params:type_name -> tooimage.TaskParams
-	4, // 3: tooimage.TaskInfo.task_param:type_name -> tooimage.TaskParams
-	1, // 4: tooimage.TaskInfo.task_status:type_name -> tooimage.TaskStatus
-	8, // 5: tooimage.QueryTaskInfoRsp.task_info:type_name -> tooimage.TaskInfo
-	2, // 6: tooimage.TooImageHttp.Img2Img:input_type -> tooimage.Img2ImgReq
-	5, // 7: tooimage.TooImageHttp.CreateTaskInfo:input_type -> tooimage.CreateTaskInfoReq
-	7, // 8: tooimage.TooImageHttp.QueryTaskInfo:input_type -> tooimage.QueryTaskInfoReq
-	3, // 9: tooimage.TooImageHttp.Img2Img:output_type -> tooimage.Img2ImgRsp
-	6, // 10: tooimage.TooImageHttp.CreateTaskInfo:output_type -> tooimage.CreateTaskInfoRsp
-	9, // 11: tooimage.TooImageHttp.QueryTaskInfo:output_type -> tooimage.QueryTaskInfoRsp
-	9, // [9:12] is the sub-list for method output_type
-	6, // [6:9] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	0,  // 0: tooimage.Img2ImgReq.mode:type_name -> tooimage.Img2ImgMode
+	0,  // 1: tooimage.TaskParams.mode:type_name -> tooimage.Img2ImgMode
+	4,  // 2: tooimage.CreateTaskInfoReq.task_params:type_name -> tooimage.TaskParams
+	4,  // 3: tooimage.TaskInfo.task_param:type_name -> tooimage.TaskParams
+	1,  // 4: tooimage.TaskInfo.task_status:type_name -> tooimage.TaskStatus
+	8,  // 5: tooimage.QueryTaskInfoRsp.task_info:type_name -> tooimage.TaskInfo
+	2,  // 6: tooimage.TooImageHttp.Img2Img:input_type -> tooimage.Img2ImgReq
+	5,  // 7: tooimage.TooImageHttp.CreateTaskInfo:input_type -> tooimage.CreateTaskInfoReq
+	7,  // 8: tooimage.TooImageHttp.QueryTaskInfo:input_type -> tooimage.QueryTaskInfoReq
+	12, // 9: tooimage.TooImageHttp.TooImageHeartBeat:input_type -> tooimage.TooImageHeartBeatReq
+	3,  // 10: tooimage.TooImageHttp.Img2Img:output_type -> tooimage.Img2ImgRsp
+	6,  // 11: tooimage.TooImageHttp.CreateTaskInfo:output_type -> tooimage.CreateTaskInfoRsp
+	9,  // 12: tooimage.TooImageHttp.QueryTaskInfo:output_type -> tooimage.QueryTaskInfoRsp
+	13, // 13: tooimage.TooImageHttp.TooImageHeartBeat:output_type -> tooimage.TooImageHeartBeatRsp
+	10, // [10:14] is the sub-list for method output_type
+	6,  // [6:10] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_too_image_proto_init() }
@@ -975,6 +1088,30 @@ func file_too_image_proto_init() {
 				return nil
 			}
 		}
+		file_too_image_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TooImageHeartBeatReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_too_image_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TooImageHeartBeatRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -982,7 +1119,7 @@ func file_too_image_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_too_image_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -1014,6 +1151,8 @@ type TooImageHttpClient interface {
 	CreateTaskInfo(ctx context.Context, in *CreateTaskInfoReq, opts ...grpc.CallOption) (*CreateTaskInfoRsp, error)
 	// QueryTaskInfo 查询状态信息
 	QueryTaskInfo(ctx context.Context, in *QueryTaskInfoReq, opts ...grpc.CallOption) (*QueryTaskInfoRsp, error)
+	// TooImageHeartBeat 用来给aws的负载均衡器使用
+	TooImageHeartBeat(ctx context.Context, in *TooImageHeartBeatReq, opts ...grpc.CallOption) (*TooImageHeartBeatRsp, error)
 }
 
 type tooImageHttpClient struct {
@@ -1051,6 +1190,15 @@ func (c *tooImageHttpClient) QueryTaskInfo(ctx context.Context, in *QueryTaskInf
 	return out, nil
 }
 
+func (c *tooImageHttpClient) TooImageHeartBeat(ctx context.Context, in *TooImageHeartBeatReq, opts ...grpc.CallOption) (*TooImageHeartBeatRsp, error) {
+	out := new(TooImageHeartBeatRsp)
+	err := c.cc.Invoke(ctx, "/tooimage.TooImageHttp/TooImageHeartBeat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TooImageHttpServer is the server API for TooImageHttp service.
 type TooImageHttpServer interface {
 	Img2Img(context.Context, *Img2ImgReq) (*Img2ImgRsp, error)
@@ -1058,6 +1206,8 @@ type TooImageHttpServer interface {
 	CreateTaskInfo(context.Context, *CreateTaskInfoReq) (*CreateTaskInfoRsp, error)
 	// QueryTaskInfo 查询状态信息
 	QueryTaskInfo(context.Context, *QueryTaskInfoReq) (*QueryTaskInfoRsp, error)
+	// TooImageHeartBeat 用来给aws的负载均衡器使用
+	TooImageHeartBeat(context.Context, *TooImageHeartBeatReq) (*TooImageHeartBeatRsp, error)
 }
 
 // UnimplementedTooImageHttpServer can be embedded to have forward compatible implementations.
@@ -1072,6 +1222,9 @@ func (*UnimplementedTooImageHttpServer) CreateTaskInfo(context.Context, *CreateT
 }
 func (*UnimplementedTooImageHttpServer) QueryTaskInfo(context.Context, *QueryTaskInfoReq) (*QueryTaskInfoRsp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryTaskInfo not implemented")
+}
+func (*UnimplementedTooImageHttpServer) TooImageHeartBeat(context.Context, *TooImageHeartBeatReq) (*TooImageHeartBeatRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TooImageHeartBeat not implemented")
 }
 
 func RegisterTooImageHttpServer(s *grpc.Server, srv TooImageHttpServer) {
@@ -1132,6 +1285,24 @@ func _TooImageHttp_QueryTaskInfo_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TooImageHttp_TooImageHeartBeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TooImageHeartBeatReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TooImageHttpServer).TooImageHeartBeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tooimage.TooImageHttp/TooImageHeartBeat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TooImageHttpServer).TooImageHeartBeat(ctx, req.(*TooImageHeartBeatReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _TooImageHttp_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "tooimage.TooImageHttp",
 	HandlerType: (*TooImageHttpServer)(nil),
@@ -1147,6 +1318,10 @@ var _TooImageHttp_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryTaskInfo",
 			Handler:    _TooImageHttp_QueryTaskInfo_Handler,
+		},
+		{
+			MethodName: "TooImageHeartBeat",
+			Handler:    _TooImageHttp_TooImageHeartBeat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

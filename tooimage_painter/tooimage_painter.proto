@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package tooimagepainter;
+option go_package="github.com/akatsukisun2020/proto_proj/tooimage_painter";
+
+import "google/api/annotations.proto";  // http协议必须要引入的文件
+
+// ==> 部分想法：
+// 写代码考虑：（1）用户发起任务之后就跑了 （2）用户跑了之后，又进来了？ ==> 怎么减少别人的等待
+// 跑了就不给她生成还是 给他生成
+// 回来之后，如果生成了，是否要通知给他？ 列表形式
+
+//****************************************** 任务公共结构定义 **********************************************//
+
+// DrawMode 绘画模式
+enum DrawMode {
+    Image2ImageModeDefault = 0;                          // image2image的普通画图
+    Image2ImageModeControlnet = 1;                       // image2image的controlnet模式
+}
+
+message Image2ImageDrawTaskParams {
+    string init_images = 1;                   // sd图片，base64编码
+    string prompt = 2;                        // 正向语
+    double denoising_strength = 3;            // 去噪强度
+    int32 width = 4;                          // 宽
+    int32 height = 5;                         // 高
+    string controlnet_input_images = 6;       // controlnet输入图片，base64编码
+}
+
+// DrawTaskParams 绘画任务参数
+message DrawTaskParams {
+    DrawMode mode = 1;                                   // 使用模式
+    Image2ImageDrawTaskParams image2image_params = 2;    // image2image系列的绘图方式的任务参数
+}
+
+enum DrawTaskStatus {
+    TASKDEFAULT = 0;
+    TASKCREATE = 1;     // 任务已经创建(可以被停)
+    TASKRUNNING = 2;    // 任务进行中(表示模型正在运行,真的在处理中)(不能被停)
+    TASKSUCESS = 3;     // 任务已完成，后续可以查看已经好的图片. 先做用户体系
+    TASKFAILED = 4;     // 任务失败
+}
+
+message DrawTaskResult {
+    repeated string image_url = 1;  // 生成的图片地址
+}
+
+// DrawTaskInfo 任务信息
+message DrawTaskInfo {
+    int64 task_id = 1;                       // 任务id   ==> 【重要】长时间没有轮训的任务，直接给他下掉，不要浪费资源了  ==> 或者做个感知（看看grpc是否支持）【用户可能点一下就跑了】
+    DrawTaskParams task_param = 2;                // 任务参数
+    DrawTaskStatus task_status = 3;               // 任务状态
+    DrawTaskResult task_result = 4;           // 任务结果
+    int32 retry_times = 5;                    // 重试次数
+}
+
+//****************************************** 服务接口结构定义 **********************************************//
+message StartDrawReq {
+    string user_id = 1;                       // 用户id，单个用户，不能同时存在2个并行任务
+    DrawTaskParams task_params = 2;           // 任务参数
+}
+
+message StartDrawRsp {
+    int32 ret_code = 1;                       // 错误吗
+    string ret_msg = 2;                       // 错误信息
+    int64 task_id = 3;                       // 任务id
+}
+
+
+// QueryDrawingReq 查询绘制任务
+message QueryDrawingReq {
+    string user_id = 1;                       // 用户id，单个用户，不能同时存在2个并行任务
+    int64 task_id = 2;                       // 取消任务
+}
+
+message QueryDrawingRsp {
+    int32 ret_code = 1;                       // 错误吗
+    string ret_msg = 2;                       // 错误信息
+    repeated DrawTaskInfo task_info = 3;      // 正在进行的任务，理论上单用户只有一个
+}
+
+// 用于以后停止绘画，用户中途取消，避免资源浪费.(如果在队列中，则可以取消，否则取消不了)
+message StopDrawReq {
+    string user_id = 1;                       // 用户id，单个用户，不能同时存在2个并行任务
+    int64 task_id = 2;                       // 取消任务
+}
+
+message StopDrawRsp {
+    int32 ret_code = 1;                       // 错误吗
+    string ret_msg = 2;                       // 错误信息
+}
+
+// TooimagePainter tooimage绘画器
+service TooimagePainter {
+    // StartDraw 开始绘画
+    rpc StartDraw(StartDrawReq) returns (StartDrawRsp){
+		option (google.api.http) = {
+			post: "/tooimage_painter/start_draw"
+            body: "*"
+		};
+	}
+
+    // StopDraw 停止绘画
+    rpc StopDraw(StopDrawReq) returns (StopDrawRsp){
+        option (google.api.http) = {
+            post: "/tooimage_painter/stop_draw"
+            body: "*"
+        };
+    }
+
+    // QueryDrawing 查询当前绘制
+    rpc QueryDrawing (QueryDrawingReq) returns (QueryDrawingRsp){
+		option (google.api.http) = {
+			post: "/tooimage_painter/query_drawing"
+            body: "*"
+		};
+	}
+}
+
+
+
