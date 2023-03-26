@@ -10,6 +10,15 @@ import "google/api/annotations.proto";  // http协议必须要引入的文件
 // 跑了就不给她生成还是 给他生成
 // 回来之后，如果生成了，是否要通知给他？ 列表形式
 
+//****************************************** 图片上传公共结构定义 **********************************************//
+
+// 上传图片，类似redis中的zset, key: user_id, score: uploadtime(秒)
+message ImageUploadItem {
+    string image_url = 1;   // 格式限制？只支持png？？到时候测试一下（todo） 
+    string file_name = 2;   // 用于删除操作的文件名
+    // int64 upload_time = 2;  // 上传时间(单位s)
+}
+
 //****************************************** 任务公共结构定义 **********************************************//
 
 // DrawMode 绘画模式
@@ -19,12 +28,14 @@ enum DrawMode {
 }
 
 message Image2ImageDrawTaskParams {
-    string init_images = 1;                   // sd图片，base64编码
+    // string init_images = 1;                // sd图片，base64编码
+    string init_image_url = 1;                // 输入图片地址(公网地址) fixme:所有的图片都通过公网传输
     string prompt = 2;                        // 正向语
     double denoising_strength = 3;            // 去噪强度
     int32 width = 4;                          // 宽
     int32 height = 5;                         // 高
-    string controlnet_input_images = 6;       // controlnet输入图片，base64编码
+    // string controlnet_input_images = 6;       // controlnet输入图片，base64编码
+    string controlnet_input_images_url = 6;   // controlnet图片地址(公网地址)
 }
 
 // DrawTaskParams 绘画任务参数
@@ -36,22 +47,29 @@ message DrawTaskParams {
 enum DrawTaskStatus {
     TASKDEFAULT = 0;
     TASKCREATE = 1;     // 任务已经创建(可以被停)
-    TASKRUNNING = 2;    // 任务进行中(表示模型正在运行,真的在处理中)(不能被停)
-    TASKSUCESS = 3;     // 任务已完成，后续可以查看已经好的图片. 先做用户体系
-    TASKFAILED = 4;     // 任务失败
+    TASKRUNNING = 2;    // 任务进行中(表示模型正在运行,真的在处理中)(不能被停) ==> 不能被重入
+    TASKRETRY = 3;      // 任务重试中
+    TASKSUCESS = 4;     // 任务已完成，后续可以查看已经好的图片. 先做用户体系
+    TASKFAILED = 5;     // 任务失败
+    TASKDELETE = 6;     // 任务被删除了
 }
 
 message DrawTaskResult {
-    repeated string image_url = 1;  // 生成的图片地址
+    repeated string image_url = 1;  // 生成的图片地址(公网地址)
+}
+
+message DrawTaskExecCtx {
+    int32 retry_times = 1;                    // 重试次数
+    string gpu_host = 2;                      // 运行的gpu  
 }
 
 // DrawTaskInfo 任务信息
 message DrawTaskInfo {
-    int64 task_id = 1;                       // 任务id   ==> 【重要】长时间没有轮训的任务，直接给他下掉，不要浪费资源了  ==> 或者做个感知（看看grpc是否支持）【用户可能点一下就跑了】
-    DrawTaskParams task_param = 2;                // 任务参数
-    DrawTaskStatus task_status = 3;               // 任务状态
-    DrawTaskResult task_result = 4;           // 任务结果
-    int32 retry_times = 5;                    // 重试次数
+    int64 task_id = 1;                        // 任务id   ==> 【重要】长时间没有轮训的任务，直接给他下掉，不要浪费资源了  ==> 或者做个感知（看看grpc是否支持）【用户可能点一下就跑了】
+    DrawTaskParams task_param = 2;            // 任务参数
+    DrawTaskStatus task_status = 3;           // 任务状态
+    DrawTaskExecCtx task_exec_ctx = 4;        // 任务运行上下文
+    DrawTaskResult task_result = 5;           // 任务结果
 }
 
 //****************************************** 服务接口结构定义 **********************************************//
@@ -90,6 +108,29 @@ message StopDrawRsp {
     string ret_msg = 2;                       // 错误信息
 }
 
+// TODO: 到时候测试一下，是否前端可能抓取登录态，然后自己筛用户user_id过来==> 是否需要做校验？【很中哟啊】
+message UploadImageReq {
+    string user_id = 1;      // 用户id 
+    string image_data = 2;   // 图片数据(base64编码)  ==> 上传频率10s长传一个，一天最多上传1000张
+}
+
+message UploadImageRsp {
+    int32 ret_code = 1;                       // 错误吗
+    string ret_msg = 2;                       // 错误信息
+    string image_url = 3;                     // 图片链接
+}
+
+// 查询用户可用上传图片地址
+message QueryUploadImageListReq{
+    string user_id = 1;      // 用户id 
+}
+
+message QueryUploadImageListRsp{
+    int32 ret_code = 1;                       // 错误吗
+    string ret_msg = 2;                       // 错误信息
+    repeated ImageUploadItem image_list = 3;  // tudo：这个需要针对 s3中设置的过期，进行判别，防止过期的图片漏出
+}
+
 // TooimagePainter tooimage绘画器
 service TooimagePainter {
     // StartDraw 开始绘画
@@ -115,6 +156,22 @@ service TooimagePainter {
             body: "*"
 		};
 	}
+
+    // QueryUploadImageList 查询用户上传图片列表
+    rpc QueryUploadImageList (QueryUploadImageListReq) returns (QueryUploadImageListRsp){
+        option (google.api.http) = {
+            post: "/tooimage_painter/query_upload_image_list"
+            body: "*"
+        };
+    }
+
+    // UploadImage 上传图片
+    rpc UploadImage (UploadImageReq) returns (UploadImageRsp){
+        option (google.api.http) = {
+            post: "/tooimage_painter/upload_image"
+            body: "*"
+        };
+    }
 }
 
 
