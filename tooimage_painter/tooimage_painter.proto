@@ -95,6 +95,18 @@ message QueryDrawingRsp {
     int32 ret_code = 1;                       // 错误吗
     string ret_msg = 2;                       // 错误信息
     repeated DrawTaskInfo task_info = 3;      // 正在进行的任务，理论上单用户只有一个
+    int32 ranks = 4;                          // 排队数(粗略统计值) 
+}
+
+message QueryUserHistoryDrawImagesReq {
+    string user_id = 1; 
+    // 分页以后在做 
+}
+
+message QueryUserHistoryDrawImagesRsp {
+    int32 ret_code = 1;                       // 错误吗
+    string ret_msg = 2;                       // 错误信息
+    repeated string image_url_list = 3;  
 }
 
 // 用于以后停止绘画，用户中途取消，避免资源浪费.(如果在队列中，则可以取消，否则取消不了)
@@ -156,6 +168,15 @@ service TooimagePainter {
             body: "*"
 		};
 	}
+
+    
+    // QueryUserHistoryDrawImages 查询当前用户生成的绘画图片列表 
+    rpc QueryUserHistoryDrawImages  (QueryUserHistoryDrawImagesReq) returns (QueryUserHistoryDrawImagesRsp){
+        option (google.api.http) = {
+            post: "/tooimage_painter/query_user_history_draw_images"
+            body: "*"
+        };
+    }
 
     // QueryUploadImageList 查询用户上传图片列表
     rpc QueryUploadImageList (QueryUploadImageListReq) returns (QueryUploadImageListRsp){
