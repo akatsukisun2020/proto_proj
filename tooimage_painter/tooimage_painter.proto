@@ -61,6 +61,7 @@ message DrawTaskResult {
 message DrawTaskExecCtx {
     int32 retry_times = 1;                    // 重试次数
     string gpu_host = 2;                      // 运行的gpu  
+    int64 update_time = 3;                    // 更新时间（秒），用来跟踪任务变更时间
 }
 
 // DrawTaskInfo 任务信息
