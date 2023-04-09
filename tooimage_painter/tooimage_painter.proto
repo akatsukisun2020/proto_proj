@@ -28,13 +28,11 @@ enum DrawMode {
 }
 
 message Image2ImageDrawTaskParams {
-    // string init_images = 1;                // sd图片，base64编码
     string init_image_url = 1;                // 输入图片地址(公网地址) fixme:所有的图片都通过公网传输
     string prompt = 2;                        // 正向语
     double denoising_strength = 3;            // 去噪强度
     int32 width = 4;                          // 宽
     int32 height = 5;                         // 高
-    // string controlnet_input_images = 6;       // controlnet输入图片，base64编码
     string controlnet_input_images_url = 6;   // controlnet图片地址(公网地址)
 }
 
@@ -74,9 +72,32 @@ message DrawTaskInfo {
 }
 
 //****************************************** 服务接口结构定义 **********************************************//
+
+
+
+// PromptFactor 正向提示语因子
+message PromptFactor {
+    string user_input_prompt = 1;             // 用户主动输入的正向提示语
+    map<string, int32> draw_stypes = 2;       // 绘画风格，map多于1个，则是混合风格，否则是单一风格
+}
+
+message Image2ImageStartDrawParams {
+    string init_image_url = 1;                // 输入图片地址(公网地址) fixme:所有的图片都通过公网传输 
+    int32 denoising_strength = 2;             // 去噪强度
+    int32 width = 3;                          // 宽
+    int32 height = 4;                         // 高
+    string controlnet_input_images_url = 5;   // controlnet图片地址(公网地址)
+    PromptFactor prompt_factors = 6;          // 正向提示词因子
+}
+
+message StartDrawParams {
+    DrawMode mode = 1;      // 模式
+    Image2ImageStartDrawParams image2image_params = 2; // image2image模式参数
+}
+
 message StartDrawReq {
     string user_id = 1;                       // 用户id，单个用户，不能同时存在2个并行任务
-    DrawTaskParams task_params = 2;           // 任务参数
+    StartDrawParams task_params = 2;          // 任务参数
 }
 
 message StartDrawRsp {
