@@ -52,8 +52,13 @@ enum DrawTaskStatus {
     TASKDELETE = 6;     // 任务被删除了
 }
 
+message Image {
+    string image_url = 1;
+    string image_id = 2; 
+}
+
 message DrawTaskResult {
-    repeated string image_url = 1;  // 生成的图片地址(公网地址)
+    repeated Image images = 1;  // 生成的图片地址(公网地址)
 }
 
 message DrawTaskExecCtx {
@@ -128,7 +133,7 @@ message QueryUserHistoryDrawImagesReq {
 message QueryUserHistoryDrawImagesRsp {
     int32 ret_code = 1;                       // 错误吗
     string ret_msg = 2;                       // 错误信息
-    repeated string image_url_list = 3;  
+    repeated Image images = 3;  
 }
 
 // 用于以后停止绘画，用户中途取消，避免资源浪费.(如果在队列中，则可以取消，否则取消不了)
