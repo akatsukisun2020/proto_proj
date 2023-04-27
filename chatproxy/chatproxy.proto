@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package chatproxy;
+option go_package="github.com/akatsukisun2020/proto_proj/chatproxy";
+
+import "google/api/annotations.proto";  // http协议必须要引入的文件
+
+
+message ChatCompletionReq {
+    string message = 1;
+}
+
+message ChatCompletionRsp {
+}
+
+// ChatCompletionMessage ... 
+message ChatCompletionMessage {
+    string role = 1; 
+    string content = 2; 
+}
+
+message ChatStreamCompletionReq {
+    string model = 1;                                              // 模型
+    int32 max_token = 2;                                           // 最大token数量
+    repeated ChatCompletionMessage chat_completion_messages = 3;  
+}
+
+message ChatCompletionStreamChoiceDelta  {
+    string content = 1;
+}
+
+message ChatCompletionStreamChoice {
+    int32 index = 1;
+    ChatCompletionStreamChoiceDelta delta = 2;
+    string finish_reasion = 3;
+}
+
+message ChatStreamCompletionRsp {
+    string id = 1;
+    string object = 2;
+    int64 created = 3;
+    string model = 4;
+    repeated ChatCompletionStreamChoice choices = 5;
+}
+
+// ChatproxyHttp ... 
+service ChatproxyHttp {
+    rpc ChatCompletion(ChatCompletionReq) returns (ChatCompletionRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			post: "/chatproxy/chat_completion"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+		};
+	}
+
+    rpc ChatStreamCompletion(ChatStreamCompletionReq) returns (stream ChatStreamCompletionRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			post: "/chatproxy/chat_stream_completion"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+		};
+	}
+
+}
+
+
+
