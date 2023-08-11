@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package namehunter;
+option go_package="github.com/akatsukisun2020/proto_proj/namehunter";
+
+import "google/api/annotations.proto";  // http协议必须要引入的文件
+
+message RandomNameReq {
+    string book = 1; // 著作
+	int32 count = 2; // 数量
+}
+
+message SelName {
+	string name = 1;     // 名字
+	string title = 2;    // 标题
+	string author = 3;   // 作者
+	string book = 4;     // 书名
+	string dynasty = 5;  // 朝代
+	string sentence = 6; // 诗句
+}
+
+message RandomNameRsp {
+	repeated SelName names = 1; // 名字
+}
+
+// NameHunterHttp 名字猎人
+service NameHunterHttp {
+	// 根据古诗词随机生成名字的接口
+    rpc RandomName(RandomNameReq) returns (RandomNameRsp){
+		option (google.api.http) = {        // 声明http的定义方式！！
+			post: "/namehunter/random_name"
+            body: "*"                     // 要传递数据过来，只能使用post方法！！
+		};
+	}
+}

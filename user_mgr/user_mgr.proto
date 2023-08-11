@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package usermgr;
+option go_package="github.com/akatsukisun2020/proto_proj/usermgr";
+
+import "google/api/annotations.proto";  // http协议必须要引入的文件
+
+
+// ************************************************ 用户存储结构 ************************************************ // 
+// (1)zset结构，维护业务的所有用户列表。key: "name_hunter_user_list"
+// (2)kv 结构，value是UserInfo，维护用户的动态和静态信息。key："name_hunter_user_" + $openid 
+// 如果考虑用户信息动态分离，到时可以重新设计存储结构：一个openid映射到userid，另外是userid映射到userinfo
+// 不过，本登录服务，还是不分离了，流量小，分离的意义不大，反倒引入复杂性  
+
+// ELoginType 登录类型
+enum ELoginType {
+    LoginWx = 0;       // 微信小程序登录方式
+}
+
+// LoginInfo 用户登录相关信息
+message LoginInfo {
+    ELoginType login_type = 1;   // 登录类型
+    string open_id = 2;          // 微信openid
+    string session_key = 3;      // 微信session_key
+    string access_token = 4;     // 业务token
+}
+
+// UserBasicInfo 用户基础信息
+message UserBasicInfo {
+    string nick = 1;             // 昵称
+    string head = 2;             // 头像
+    int32 gender = 3;            // 性别
+    string email = 4;            // 邮件
+    string iphone = 5;           // 电话
+}
+
+// UserInfo 用户信息
+message UserInfo {
+    string user_id = 1;              // 用户id  (login_type#login_id的base64编码)
+    UserBasicInfo basic_info = 2;    // 用户基础信息
+    LoginInfo login_info = 3;        // 登录信息
+}
+
+// ************************************************ 用户接口 ************************************************ //
+
+// UserRegisterReq 用户注册，wx小程序的话，用户是不需要注册的
+message UserRegisterReq {
+
+}
+
+message UserRegisterRsp {
+
+}
+
+// LoginCredential 登录凭证
+message LoginCredential {
+    ELoginType login_type = 1;  // 登录类型
+    string code = 2;            // 登录码,wx小程序是jscode
+}
+
+message UserLoginReq {
+    LoginCredential credential = 1; // 登录凭证
+}
+
+message UserLoginRsp {
+    int32 ret_code = 1;
+    string ret_msg = 2;
+    LoginInfo info = 3;        // 登录信息 
+}
+
+// CheckLoginReq 登录态校验
+message CheckLoginReq {
+    string user_id = 1;      // 用户id
+    string access_token = 2; // 登录token
+}
+
+enum ELoginResult {
+    LoginSuccess = 0;          // 登录成功  
+    LoginFailForExpired = 1;   // 登录态for登录态过期
+    LoginFailForNotExist = 2;  // 登录失败for用户不存在
+    LoginFailForElse = 100;    // 登录失败for其他原因
+}
+
+message CheckLoginRsp {
+    int32 ret_code = 1;
+    string ret_msg = 2;
+    ELoginResult result = 3;  // 登录结果
+}
+
+message RefreshLoginReq {
+    string user_id = 1;      // 用户id
+    string access_token = 2; // 登录token
+}
+
+message RefreshLoginRsp {
+    int32 ret_code = 1;
+    string ret_msg = 2;
+    LoginInfo info = 3;        // 登录信息 
+}
+
+// UserMgrHttp 用户管理
+service UserMgrHttp {
+	// UserRegister 用户注册接口(TODO:以后在实现)
+    rpc UserRegister(UserRegisterReq) returns (UserRegisterRsp) { 
+		option (google.api.http) = {         
+			post: "/user_mgr/user_register"
+            body: "*"                     
+		};
+	}
+
+	// UserLogin 用户登录
+    rpc UserLogin(UserLoginReq) returns (UserLoginRsp) { 
+		option (google.api.http) = {         
+			post: "/user_mgr/user_login"
+            body: "*"                     
+		};
+	}
+
+	// CheckLogin 校验登录
+    rpc CheckLogin(CheckLoginReq) returns (CheckLoginRsp) { 
+		option (google.api.http) = {         
+			post: "/user_mgr/check_login"
+            body: "*"                     
+		};
+	}
+
+	// RefreshLogin 刷新登录
+    rpc RefreshLogin(RefreshLoginReq) returns (RefreshLoginRsp) { 
+		option (google.api.http) = {         
+			post: "/user_mgr/refresh_login"
+            body: "*"                     
+		};
+	}
+}
