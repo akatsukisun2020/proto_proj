@@ -23,6 +23,7 @@ message LoginInfo {
     string open_id = 2;          // 微信openid
     string session_key = 3;      // 微信session_key
     string access_token = 4;     // 业务token
+    string pre_access_token = 5; // 上一次的业务token，主要是为了避免登录态更新的过程中，已经发出去的请求直接失效
 }
 
 // UserBasicInfo 用户基础信息
@@ -65,7 +66,8 @@ message UserLoginReq {
 message UserLoginRsp {
     int32 ret_code = 1;
     string ret_msg = 2;
-    LoginInfo info = 3;        // 登录信息 
+    string user_id = 3;        // 用户id
+    LoginInfo info = 4;        // 登录信息 
 }
 
 // CheckLoginReq 登录态校验
